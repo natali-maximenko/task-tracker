@@ -12,6 +12,7 @@ defmodule Auth.Guardian do
 
   def resource_from_claims(%{"sub" => "User:" <> sub}) do
     [uid, _role] = String.split(sub, "|")
+
     case Accounts.get_user_by_uid(uid) do
       nil -> {:error, :user_not_found}
       user -> {:ok, user}

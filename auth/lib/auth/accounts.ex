@@ -29,6 +29,16 @@ defmodule Auth.Accounts do
     Repo.get_by(User, public_id: uid)
   end
 
+  def get_random_employee_id do
+    Repo.one(
+      from u in User,
+        where: u.role == "employee",
+        select: u.public_id,
+        order_by: fragment("RANDOM()"),
+        limit: 1
+    )
+  end
+
   @doc """
   Gets a user by email and password.
 

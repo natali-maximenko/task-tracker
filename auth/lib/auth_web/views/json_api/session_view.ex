@@ -1,4 +1,4 @@
-defmodule AuthWeb.JsonApi.UserSessionView do
+defmodule AuthWeb.JsonApi.SessionView do
   use AuthWeb, :view
 
   def render("create.json", %{user: user, jwt: jwt}) do

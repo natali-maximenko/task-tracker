@@ -1,4 +1,4 @@
-defmodule AuthWeb.JsonApi.UserSessionController do
+defmodule AuthWeb.JsonApi.SessionController do
   use AuthWeb, :controller
 
   alias Auth.Accounts

@@ -16,4 +16,5 @@ users = [
   %{email: "popug2@tasktracker.ru", password: "123456", name: "Popug 2"},
   %{email: "popug3@tasktracker.ru", password: "123456", name: "Popug 3"}
 ]
+
 Enum.map(users, &Auth.Accounts.add_user/1)
