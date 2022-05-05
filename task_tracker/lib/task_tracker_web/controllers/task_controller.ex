@@ -16,7 +16,7 @@ defmodule TaskTrackerWeb.TaskController do
 
   def create(conn, %{"task" => task_params}) do
     # sync request to Auth service
-    employee_id = Auth.get_employee_id()
+    employee_id = 1 #Auth.get_employee_id()
     task_params = Map.merge(task_params, %{"employee_id" => employee_id})
     case Tasks.create_task(task_params) do
       {:ok, task} ->

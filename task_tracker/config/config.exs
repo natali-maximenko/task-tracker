@@ -47,6 +47,15 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :task_tracker, TaskTracker.Auth.Guardian,
+  issuer: "task_tracker",
+  secret_key: "1rxopZpgejcVlr4luT+N9K6ZE6Z187Wx4yZTCDx3AgSHc7HyIerz+MYJo1J6wFrv",
+  ttl: {1, :days}
+
+config :task_tracker,
+  auth_host: "http://localhost:4000",
+  auth_endpoint: "/api/v1/users/log_in"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
