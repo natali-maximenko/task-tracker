@@ -15,9 +15,10 @@ defmodule TaskTrackerWeb.TaskController do
   end
 
   def create(conn, %{"task" => task_params}) do
-    # sync request to Auth service
-    employee_id = 1 #Auth.get_employee_id()
+    token = Guardian.Plug.current_token(conn)
+    {:ok, employee_id} = Auth.get_employee_id(token)
     task_params = Map.merge(task_params, %{"employee_id" => employee_id})
+
     case Tasks.create_task(task_params) do
       {:ok, task} ->
         conn

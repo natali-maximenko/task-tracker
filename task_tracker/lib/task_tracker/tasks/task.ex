@@ -28,5 +28,4 @@ defmodule TaskTracker.Tasks.Task do
     |> cast(attrs, [:employee_id, :completed])
     |> validate_required([:completed])
   end
-
 end

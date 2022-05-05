@@ -54,7 +54,8 @@ config :task_tracker, TaskTracker.Auth.Guardian,
 
 config :task_tracker,
   auth_host: "http://localhost:4000",
-  auth_endpoint: "/api/v1/users/log_in"
+  auth_endpoint: "/api/v1/users/log_in",
+  auth_get_employee: "/api/v1/users/random_employee_id"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

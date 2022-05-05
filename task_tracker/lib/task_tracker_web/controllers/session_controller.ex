@@ -6,6 +6,7 @@ defmodule TaskTrackerWeb.SessionController do
 
   def new(conn, _) do
     maybe_user = Guardian.Plug.current_resource(conn)
+
     if maybe_user do
       redirect(conn, to: "/tasks")
     else
@@ -15,6 +16,7 @@ defmodule TaskTrackerWeb.SessionController do
 
   def login(conn, %{"user" => user_params}) do
     %{"email" => email, "password" => password} = user_params
+
     Auth.authenticate_user(email, password)
     |> login_reply(conn)
   end
