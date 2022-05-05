@@ -25,6 +25,10 @@ defmodule Auth.Accounts do
     Repo.get_by(User, email: email)
   end
 
+  def get_user_by_uid(uid) when is_binary(uid) do
+    Repo.get_by(User, public_id: uid)
+  end
+
   @doc """
   Gets a user by email and password.
 

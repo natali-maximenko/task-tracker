@@ -6,7 +6,9 @@ defmodule AuthWeb.JsonApi.UserSessionView do
       status: :ok,
       data: %{
         token: jwt,
-        email: user.email
+        email: user.email,
+        role: user.role,
+        public_id: user.public_id
       },
       message:
         "You are successfully logged in! Add this token to authorization header to make authorized requests."
