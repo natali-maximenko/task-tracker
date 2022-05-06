@@ -1,7 +1,7 @@
 defmodule TaskTrackerWeb.TaskController do
   use TaskTrackerWeb, :controller
 
-  alias TaskTracker.{Tasks, Auth}
+  alias TaskTracker.Tasks
   alias TaskTracker.Tasks.Task
   alias TaskTracker.Kafka.Producer
   alias TaskTracker.Commands.AddTask
@@ -17,7 +17,7 @@ defmodule TaskTrackerWeb.TaskController do
   end
 
   def create(conn, %{"task" => task_params}) do
-    case AddTask(Guardian.Plug.current_token(conn), task_params) do
+    case AddTask.call(Guardian.Plug.current_token(conn), task_params) do
       {:ok, task} ->
         Producer.send_message("tasks", %{event: "task_assigned", data: %{task_id: task.id, employee_id: task.employee_id}})
 

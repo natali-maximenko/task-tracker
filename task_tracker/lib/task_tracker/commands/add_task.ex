@@ -6,9 +6,13 @@ defmodule TaskTracker.Commands.AddTask do
   alias TaskTracker.Tasks
 
   def call(token, task_params) do
-    with {:ok, employee_id} <- Auth.get_employee_id(token),
-         attrs <- Map.merge(task_params, %{"employee_id" => employee_id}) do
-      Tasks.create_task(attrs)
-    end
+    token
+    |> Auth.get_employee_id()
+    |> assign_employee(task_params)
+    |> Tasks.create_task()
+  end
+
+  defp assign_employee({:ok, employee_id}, params) do
+    Map.merge(params, %{"employee_id" => employee_id})
   end
 end
