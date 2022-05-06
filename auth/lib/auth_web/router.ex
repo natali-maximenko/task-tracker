@@ -72,6 +72,7 @@ defmodule AuthWeb.Router do
     pipe_through [:api, :require_jwt]
 
     get "/users/random_employee_id", UserController, :random_employee_id
+    get "/users/list_employee", UserController, :list_employee
   end
 
   # Enables LiveDashboard only for development

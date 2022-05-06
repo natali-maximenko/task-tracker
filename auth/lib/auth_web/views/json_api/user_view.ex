@@ -10,6 +10,15 @@ defmodule AuthWeb.JsonApi.UserView do
     }
   end
 
+  def render("employees.json", %{ids: ids}) do
+    %{
+      status: :ok,
+      data: %{
+        ids: ids
+      }
+    }
+  end
+
   def render("error.json", %{message: message}) do
     %{
       status: :not_found,

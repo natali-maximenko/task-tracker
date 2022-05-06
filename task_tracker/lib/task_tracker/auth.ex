@@ -11,8 +11,20 @@ defmodule TaskTracker.Auth do
     request_employee_id(token) |> handle_employee_response()
   end
 
+  def list_employee_ids(token) do
+    request_employee_ids(token) |> handle_employees_response()
+  end
+
   def authenticate_user(email, password) do
     verify(email, password) |> handle_response()
+  end
+
+  defp handle_employees_response(%{"data" => data, "status" => "ok"}) do
+    {:ok, data["ids"]}
+  end
+
+  defp handle_employees_response(%{"data" => _data, "status" => _status, "message" => msg}) do
+    {:error, msg}
   end
 
   defp handle_employee_response(%{"data" => data, "status" => "ok"}) do
@@ -32,6 +44,30 @@ defmodule TaskTracker.Auth do
 
   defp handle_response(%{"data" => _data, "status" => _status, "message" => msg}) do
     {:error, msg}
+  end
+
+  defp headers(token), do: [{"Content-Type", "application/json"}, {"Authorization", "Bearer #{token}"}]
+
+  defp request_employee_ids(token) do
+    url =
+      Application.get_env(:task_tracker, :auth_host) <>
+        Application.get_env(:task_tracker, :auth_list_employee)
+
+    case HTTPoison.get(url, headers(token)) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        IO.puts(body)
+        Jason.decode!(body)
+
+      {:ok, %HTTPoison.Response{status_code: 401, body: body}} ->
+        IO.puts(body)
+        Jason.decode!(body)
+
+      {:ok, %HTTPoison.Response{status_code: 404}} ->
+        IO.puts("Not found :(")
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        IO.inspect(reason)
+    end
   end
 
   defp request_employee_id(token) do

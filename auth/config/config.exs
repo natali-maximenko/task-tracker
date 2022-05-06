@@ -56,6 +56,14 @@ config :auth, Auth.JsonApi.AccessPipeline,
   module: Auth.Guardian,
   error_handler: Auth.JsonApi.ErrorHandler
 
+topics = ["test", "accounts-stream"]
+
+config :kafka_ex,
+  brokers: "kafka:9092",
+  topics: topics,
+  kafka_version: "kayrock",
+  sleep_for_reconnect: 5_000
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

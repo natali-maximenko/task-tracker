@@ -24,6 +24,6 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CREATE_TOPICS=test:1:1,tasks:1:1,tasks-stream:1:1 
+      - KAFKA_CREATE_TOPICS=test:1:1,tasks:1:1,tasks-stream:1:1,accounts-stream:1:1 
     depends_on:
       - zookeeper

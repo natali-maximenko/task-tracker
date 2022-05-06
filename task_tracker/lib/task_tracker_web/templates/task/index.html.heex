@@ -5,6 +5,7 @@
     <tr>
       <th>Description</th>
       <th>Employee</th>
+      <th>Public ID</th>
       <th>Completed</th>
 
       <th></th>
@@ -15,6 +16,7 @@
     <tr>
       <td><%= task.description %></td>
       <td><%= task.employee_id %></td>
+      <td><%= task.public_id %></td>
       <td><%= task.completed %></td>
 
       <td>
@@ -27,4 +29,5 @@
   </tbody>
 </table>
 
-<span><%= link "New Task", to: Routes.task_path(@conn, :new) %></span>
+<span><%= link "New Task", to: Routes.task_path(@conn, :new) %></span> |
+<span><%= link "Shuffle", to: Routes.task_path(@conn, :shuffle) %></span>

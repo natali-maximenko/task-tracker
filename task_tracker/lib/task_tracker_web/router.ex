@@ -40,6 +40,8 @@ defmodule TaskTrackerWeb.Router do
   scope "/", TaskTrackerWeb do
     pipe_through [:browser, :auth, :ensure_auth]
 
+    get "/tasks/:id/complete", TaskController, :complete
+    get "/tasks/shuffle", TaskController, :shuffle
     resources "/tasks", TaskController
   end
 

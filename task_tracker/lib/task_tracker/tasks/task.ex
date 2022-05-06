@@ -6,6 +6,7 @@ defmodule TaskTracker.Tasks.Task do
     field :completed, :boolean, default: false
     field :description, :string
     field :employee_id, Ecto.UUID
+    field :public_id, Ecto.UUID, autogenerate: true
 
     timestamps()
   end

@@ -55,12 +55,14 @@ config :task_tracker, TaskTracker.Auth.Guardian,
 config :task_tracker,
   auth_host: "http://localhost:4000",
   auth_endpoint: "/api/v1/users/log_in",
-  auth_get_employee: "/api/v1/users/random_employee_id"
+  auth_get_employee: "/api/v1/users/random_employee_id",
+  auth_list_employee: "/api/v1/users/list_employee"
 
 topics = ["test", "tasks", "tasks-stream"]
+consumer_topics = ["accounts-stream", "tasks"]
 
 config :task_tracker,
-  kafka_topics: topics,
+  kafka_topics: consumer_topics,
   kafka_group_id: "group_1",
   kafka_brokers: [kafka: 9092]
 

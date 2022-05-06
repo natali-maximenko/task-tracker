@@ -21,6 +21,10 @@ defmodule TaskTracker.Tasks do
     Repo.all(Task)
   end
 
+  def list_opened_tasks do
+    Repo.all(from t in Task, where: t.completed == false, select: t.id)
+  end
+
   @doc """
   Gets a single task.
 
@@ -61,9 +65,9 @@ defmodule TaskTracker.Tasks do
     |> Repo.update()
   end
 
-  def complete_task(%Task{} = task, attrs) do
+  def complete_task(%Task{} = task) do
     task
-    |> Task.complete_changeset(attrs)
+    |> Task.complete_changeset(%{completed: true})
     |> Repo.update()
   end
 

@@ -4,7 +4,7 @@ defmodule TaskTrackerWeb.TaskController do
   alias TaskTracker.Tasks
   alias TaskTracker.Tasks.Task
   alias TaskTracker.Kafka.Producer
-  alias TaskTracker.Commands.AddTask
+  alias TaskTracker.Commands.{AddTask, CompleteTask, ShuffleTasks}
 
   def index(conn, _params) do
     tasks = Tasks.list_tasks()
@@ -19,7 +19,7 @@ defmodule TaskTrackerWeb.TaskController do
   def create(conn, %{"task" => task_params}) do
     case AddTask.call(Guardian.Plug.current_token(conn), task_params) do
       {:ok, task} ->
-        Producer.send_message("tasks", %{event: "task_assigned", data: %{task_id: task.id, employee_id: task.employee_id}})
+        Producer.send_message("tasks", %{event: "task_assigned", data: %{task_id: task.public_id, employee_id: task.employee_id}})
 
         conn
         |> put_flash(:info, "Task created successfully.")
@@ -53,6 +53,29 @@ defmodule TaskTrackerWeb.TaskController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", task: task, changeset: changeset)
     end
+  end
+
+  def complete(conn, %{"id" => id}) do
+    case CompleteTask.call(id) do
+      {:ok, task} ->
+        Producer.send_message("tasks", %{event: "task_completed", data: %{task_id: task.public_id, employee_id: task.employee_id}})
+
+        conn
+        |> put_flash(:info, "Tasks completed successfully.")
+        |> redirect(to: Routes.task_path(conn, :show, task))
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        task = Tasks.get_task!(id)
+        render(conn, "edit.html", task: task, changeset: changeset)
+    end
+  end
+
+  def shuffle(conn, _) do
+    Guardian.Plug.current_token(conn) |> ShuffleTasks.call()
+
+    conn
+    |> put_flash(:info, "Task shuffle completed.")
+    |> redirect(to: Routes.task_path(conn, :index))
   end
 
   def delete(conn, %{"id" => id}) do

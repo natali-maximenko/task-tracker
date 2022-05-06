@@ -39,6 +39,10 @@ defmodule Auth.Accounts do
     )
   end
 
+  def list_employee_ids do
+    Repo.all(from u in User, where: u.role == "employee", select: u.public_id)
+  end
+
   @doc """
   Gets a user by email and password.
 
