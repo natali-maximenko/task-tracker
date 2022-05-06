@@ -3,6 +3,8 @@ defmodule TaskTrackerWeb.TaskController do
 
   alias TaskTracker.{Tasks, Auth}
   alias TaskTracker.Tasks.Task
+  alias TaskTracker.Kafka.Producer
+  alias TaskTracker.Commands.AddTask
 
   def index(conn, _params) do
     tasks = Tasks.list_tasks()
@@ -15,12 +17,10 @@ defmodule TaskTrackerWeb.TaskController do
   end
 
   def create(conn, %{"task" => task_params}) do
-    token = Guardian.Plug.current_token(conn)
-    {:ok, employee_id} = Auth.get_employee_id(token)
-    task_params = Map.merge(task_params, %{"employee_id" => employee_id})
-
-    case Tasks.create_task(task_params) do
+    case AddTask(Guardian.Plug.current_token(conn), task_params) do
       {:ok, task} ->
+        Producer.send_message("tasks", %{event: "task_assigned", data: %{task_id: task.id, employee_id: task.employee_id}})
+
         conn
         |> put_flash(:info, "Task created successfully.")
         |> redirect(to: Routes.task_path(conn, :show, task))

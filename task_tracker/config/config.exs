@@ -57,6 +57,20 @@ config :task_tracker,
   auth_endpoint: "/api/v1/users/log_in",
   auth_get_employee: "/api/v1/users/random_employee_id"
 
+topics = ["test", "tasks", "tasks-stream"]
+
+config :task_tracker,
+  kafka_topics: topics,
+  kafka_group_id: "group_1",
+  kafka_brokers: [kafka: 9092]
+
+config :kafka_ex,
+  brokers: "kafka:9092",
+  topics: topics,
+  disable_default_worker: true,
+  kafka_version: "kayrock",
+  sleep_for_reconnect: 5_000
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

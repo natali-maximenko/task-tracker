@@ -15,10 +15,14 @@ defmodule TaskTracker.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: TaskTracker.PubSub},
       # Start the Endpoint (http/https)
-      TaskTrackerWeb.Endpoint
+      TaskTrackerWeb.Endpoint,
+      # Kafka
+      {TaskTracker.Kafka.Consumer, []}
       # Start a worker by calling: TaskTracker.Worker.start_link(arg)
       # {TaskTracker.Worker, arg}
     ]
+
+    KafkaEx.create_worker(:kafka_producer)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
