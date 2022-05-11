@@ -24,7 +24,8 @@ defmodule TaskTracker.Commands.ShuffleTasks do
       from(t in Tasks.Task, where: t.id == ^task_id)
       |> Repo.update_all(set: [employee_id: user_id])
 
-      Producer.send_message("tasks", %{event: "task_assigned", data: %{task_id: task_id, employee_id: user_id}})
+      # TODO use batch produce
+      Producer.send_message("tasks-lifecycle", %{event: "task_assigned", data: %{task_id: task_id, employee_id: user_id}})
     end)
   end
 end

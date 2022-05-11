@@ -3,6 +3,7 @@ defmodule TaskTracker.Kafka.Consumer do
 
   require Logger
   alias Broadway.Message
+  alias TaskTracker.Accounts
 
   def start_link(_opts) do
     topics = Application.get_env(:task_tracker, :kafka_topics)
@@ -40,6 +41,26 @@ defmodule TaskTracker.Kafka.Consumer do
   end
 
   # callbacks
+
+  @impl true
+  def handle_message(_processor, %Message{data: data, metadata: %{topic: "accounts-stream"}} = message, context) do
+    Logger.debug("BROADWAY #{inspect(context, pretty: true)}\n#{inspect(message, pretty: true)}")
+
+    case Jason.decode(data) do
+      {:ok, payload} ->
+        IO.inspect(payload)
+        # TODO find or create
+        {:ok, user} = Accounts.create_user(payload["data"])
+        IO.inspect(user)
+
+      err ->
+        Logger.error(
+          "Unable to decode kafka message, context: #{inspect(context)}, error: #{inspect(err, pretty: true)}, message:\n#{inspect(message, pretty: true)}"
+        )
+    end
+
+    message
+  end
 
   @impl true
   def handle_message(_processor, %Message{data: data, metadata: %{topic: topic}} = message, context) do

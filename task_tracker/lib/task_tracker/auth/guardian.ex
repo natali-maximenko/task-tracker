@@ -1,6 +1,6 @@
 defmodule TaskTracker.Auth.Guardian do
   use Guardian, otp_app: :task_tracker
-  alias TaskTracker.Auth.User
+  alias TaskTracker.Accounts.User
 
   def subject_for_token(%User{public_id: uid, role: role}, _claims) do
     {:ok, "User:#{uid}|#{role}"}
@@ -10,6 +10,7 @@ defmodule TaskTracker.Auth.Guardian do
 
   def resource_from_claims(%{"sub" => "User:" <> sub}) do
     [uid, role] = String.split(sub, "|")
+    # Account.get_user_by_uuid(uid)
     {:ok, %User{public_id: uid, role: role}}
   end
 

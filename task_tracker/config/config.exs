@@ -58,8 +58,8 @@ config :task_tracker,
   auth_get_employee: "/api/v1/users/random_employee_id",
   auth_list_employee: "/api/v1/users/list_employee"
 
-topics = ["test", "tasks", "tasks-stream"]
-consumer_topics = ["accounts-stream", "tasks"]
+topics = ["test", "tasks-lifecycle", "tasks-stream"]
+consumer_topics = ["accounts-stream", "tasks-lifecycle"]
 
 config :task_tracker,
   kafka_topics: consumer_topics,

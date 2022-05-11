@@ -20,7 +20,8 @@ defmodule AuthWeb.UserRegistrationController do
             &Routes.user_confirmation_url(conn, :edit, &1)
           )
 
-        Producer.send_message("accounts-stream", %{event: "account_registered", data: %{public_id: user.public_id, role: user.role}})
+        user_data = %{email: user.email, name: user.name, public_id: user.public_id, role: user.role}
+        Producer.send_message("accounts-stream", %{event: "account_registered", data: user_data})
 
         conn
         |> put_flash(:info, "User created successfully.")

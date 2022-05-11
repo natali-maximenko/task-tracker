@@ -19,7 +19,7 @@ defmodule TaskTrackerWeb.TaskController do
   def create(conn, %{"task" => task_params}) do
     case AddTask.call(Guardian.Plug.current_token(conn), task_params) do
       {:ok, task} ->
-        Producer.send_message("tasks", %{event: "task_assigned", data: %{task_id: task.public_id, employee_id: task.employee_id}})
+        Producer.send_message("tasks-lifecycle", %{event: "task_assigned", data: %{task_id: task.public_id, employee_id: task.employee_id}})
 
         conn
         |> put_flash(:info, "Task created successfully.")
@@ -58,7 +58,7 @@ defmodule TaskTrackerWeb.TaskController do
   def complete(conn, %{"id" => id}) do
     case CompleteTask.call(id) do
       {:ok, task} ->
-        Producer.send_message("tasks", %{event: "task_completed", data: %{task_id: task.public_id, employee_id: task.employee_id}})
+        Producer.send_message("tasks-lifecycle", %{event: "task_completed", data: %{task_id: task.public_id, employee_id: task.employee_id}})
 
         conn
         |> put_flash(:info, "Tasks completed successfully.")
