@@ -47,6 +47,32 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :task_tracker, TaskTracker.Auth.Guardian,
+  issuer: "task_tracker",
+  secret_key: "1rxopZpgejcVlr4luT+N9K6ZE6Z187Wx4yZTCDx3AgSHc7HyIerz+MYJo1J6wFrv",
+  ttl: {1, :days}
+
+config :task_tracker,
+  auth_host: "http://localhost:4000",
+  auth_endpoint: "/api/v1/users/log_in",
+  auth_get_employee: "/api/v1/users/random_employee_id",
+  auth_list_employee: "/api/v1/users/list_employee"
+
+topics = ["test", "tasks-lifecycle", "tasks-stream"]
+consumer_topics = ["accounts-stream", "tasks-lifecycle"]
+
+config :task_tracker,
+  kafka_topics: consumer_topics,
+  kafka_group_id: "group_1",
+  kafka_brokers: [kafka: 9092]
+
+config :kafka_ex,
+  brokers: "kafka:9092",
+  topics: topics,
+  disable_default_worker: true,
+  kafka_version: "kayrock",
+  sleep_for_reconnect: 5_000
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

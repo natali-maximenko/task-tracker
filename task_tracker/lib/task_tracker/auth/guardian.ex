@@ -1,8 +1,6 @@
-defmodule Auth.Guardian do
-  use Guardian, otp_app: :auth
-
-  alias Auth.Accounts
-  alias Auth.Accounts.User
+defmodule TaskTracker.Auth.Guardian do
+  use Guardian, otp_app: :task_tracker
+  alias TaskTracker.Accounts.User
 
   def subject_for_token(%User{public_id: uid, role: role}, _claims) do
     {:ok, "User:#{uid}|#{role}"}
@@ -11,12 +9,9 @@ defmodule Auth.Guardian do
   def subject_for_token(_, _), do: {:error, :unhandled_resource_type}
 
   def resource_from_claims(%{"sub" => "User:" <> sub}) do
-    [uid, _role] = String.split(sub, "|")
-
-    case Accounts.get_user_by_uid(uid) do
-      nil -> {:error, :user_not_found}
-      user -> {:ok, user}
-    end
+    [uid, role] = String.split(sub, "|")
+    # Account.get_user_by_uuid(uid)
+    {:ok, %User{public_id: uid, role: role}}
   end
 
   def resource_from_claims(_), do: {:error, :unhandled_resource_type}

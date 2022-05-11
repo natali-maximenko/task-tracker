@@ -3,6 +3,7 @@ defmodule AuthWeb.UserRegistrationController do
 
   alias Auth.Accounts
   alias Auth.Accounts.User
+  alias Auth.Kafka.Producer
   alias AuthWeb.UserAuth
 
   def new(conn, _params) do
@@ -18,6 +19,9 @@ defmodule AuthWeb.UserRegistrationController do
             user,
             &Routes.user_confirmation_url(conn, :edit, &1)
           )
+
+        user_data = %{email: user.email, name: user.name, public_id: user.public_id, role: user.role}
+        Producer.send_message("accounts-stream", %{event: "account_registered", data: user_data})
 
         conn
         |> put_flash(:info, "User created successfully.")

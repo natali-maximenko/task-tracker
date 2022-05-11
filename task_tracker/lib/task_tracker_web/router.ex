@@ -1,6 +1,8 @@
 defmodule TaskTrackerWeb.Router do
   use TaskTrackerWeb, :router
 
+  import TaskTracker.Auth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -14,9 +16,32 @@ defmodule TaskTrackerWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", TaskTrackerWeb do
-    pipe_through :browser
+  pipeline :auth do
+    plug TaskTracker.Auth.AccessPipeline
+  end
 
+  pipeline :ensure_auth do
+    plug Guardian.Plug.EnsureAuthenticated
+  end
+
+  scope "/", TaskTrackerWeb do
+    pipe_through [:browser, :auth]
+
+    get "/logout", SessionController, :logout
+  end
+
+  scope "/", TaskTrackerWeb do
+    pipe_through [:browser, :auth, :redirect_if_user_is_authenticated]
+
+    get "/login", SessionController, :new
+    post "/login", SessionController, :login
+  end
+
+  scope "/", TaskTrackerWeb do
+    pipe_through [:browser, :auth, :ensure_auth]
+
+    get "/tasks/:id/complete", TaskController, :complete
+    get "/tasks/shuffle", TaskController, :shuffle
     resources "/tasks", TaskController
   end
 

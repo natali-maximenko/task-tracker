@@ -1,4 +1,4 @@
-defmodule AuthWeb.JsonApi.UserSessionView do
+defmodule AuthWeb.JsonApi.SessionView do
   use AuthWeb, :view
 
   def render("create.json", %{user: user, jwt: jwt}) do
@@ -6,7 +6,9 @@ defmodule AuthWeb.JsonApi.UserSessionView do
       status: :ok,
       data: %{
         token: jwt,
-        email: user.email
+        email: user.email,
+        role: user.role,
+        public_id: user.public_id
       },
       message:
         "You are successfully logged in! Add this token to authorization header to make authorized requests."

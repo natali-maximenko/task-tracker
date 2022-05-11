@@ -13,11 +13,17 @@
   </li>
 
   <li>
+    <strong>Public id:</strong>
+    <%= @task.public_id %>
+  </li>
+
+  <li>
     <strong>Completed:</strong>
     <%= @task.completed %>
   </li>
 
 </ul>
 
+<span><%= link "Complete", to: Routes.task_path(@conn, :complete, @task) %></span> |
 <span><%= link "Edit", to: Routes.task_path(@conn, :edit, @task) %></span> |
 <span><%= link "Back", to: Routes.task_path(@conn, :index) %></span>
