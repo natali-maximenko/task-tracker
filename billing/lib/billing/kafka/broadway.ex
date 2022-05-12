@@ -3,7 +3,7 @@ defmodule Billing.Kafka.Consumer do
   require Logger
 
   alias Broadway.Message
-  alias Billing.Accounts
+  alias Billing.Commands.{AddTask, AddAccount, CompleteTask}
 
   def start_link(_opts) do
     topics = Application.get_env(:billing, :kafka_topics)
@@ -50,8 +50,29 @@ defmodule Billing.Kafka.Consumer do
     case Jason.decode(data) do
       {:ok, payload} ->
         IO.inspect(payload)
-        user = Accounts.find_or_create(payload["data"])
-        IO.inspect(user)
+        bill = AddAccount.call(payload["data"])
+        IO.inspect(bill)
+
+      err ->
+        Logger.error(
+          "Unable to decode kafka message, context: #{inspect(context)}, error: #{inspect(err, pretty: true)}, message:\n#{inspect(message, pretty: true)}"
+        )
+    end
+
+    message
+  end
+
+  @impl true
+  def handle_message(_processor, %Message{data: data, metadata: %{topic: "tasks-lifecycle"}} = message, context) do
+    Logger.debug("BROADWAY #{inspect(context, pretty: true)}\n#{inspect(message, pretty: true)}")
+
+    case Jason.decode(data) do
+      {:ok, payload} ->
+        case payload["event"] do
+          "task_assigned" -> AddTask.call(payload["data"])
+          "task_completed" -> CompleteTask.call(payload["data"])
+          event -> Logger.warn("Unknown event: #{event}")
+        end
 
       err ->
         Logger.error(
