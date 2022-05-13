@@ -17,19 +17,27 @@ defmodule TaskTrackerWeb.TaskController do
     render(conn, "new.html", changeset: changeset)
   end
 
-  @assign_schema SchemaRegistry.load_schema("tasks", "task_assigned")
   def create(conn, %{"task" => task_params}) do
     case AddTask.call(Guardian.Plug.current_token(conn), task_params) do
       {:ok, task} ->
-        data = %{"description" => task.description, "public_id" => task.public_id, "employee_id" => task.employee_id, "completed" => task.completed}
+        data = %{
+          "jira_id" => task.jira_id,
+          "description" => task.description,
+          "public_id" => task.public_id,
+          "employee_id" => task.employee_id,
+          "completed" => task.completed
+        }
+
         event = %{
-          "event_id" => Ecto.UUID.generate,
-          "event_version" => 1,
+          "event_id" => Ecto.UUID.generate(),
+          "event_version" => 2,
           "event_time" => DateTime.now!("Etc/UTC") |> to_string(),
           "event_name" => "task_assigned",
           "producer" => "task_tracker",
-          "data" => data}
-        :ok = SchemaRegistry.validate(@assign_schema, event)
+          "data" => data
+        }
+
+        :ok =  SchemaRegistry.load_schema("tasks", "task_assigned", 2) |> SchemaRegistry.validate(event)
         Producer.send_message("tasks-lifecycle", event)
 
         conn
@@ -66,19 +74,21 @@ defmodule TaskTrackerWeb.TaskController do
     end
   end
 
-  @complete_schema SchemaRegistry.load_schema("tasks", "task_completed")
   def complete(conn, %{"id" => id}) do
     case CompleteTask.call(id) do
       {:ok, task} ->
-        data = %{public_id: task.public_id, employee_id: task.employee_id}
+        data = %{"public_id" => task.public_id, "employee_id" => task.employee_id}
+
         event = %{
-          "event_id" => Ecto.UUID.generate,
+          "event_id" => Ecto.UUID.generate(),
           "event_version" => 1,
           "event_time" => DateTime.now!("Etc/UTC") |> to_string(),
           "event_name" => "task_completed",
           "producer" => "task_tracker",
-          "data" => data}
-        :ok = SchemaRegistry.validate(@complete_schema, event)
+          "data" => data
+        }
+
+        :ok = SchemaRegistry.load_schema("tasks", "task_completed", 1) |> SchemaRegistry.validate(event)
         Producer.send_message("tasks-lifecycle", event)
 
         conn

@@ -9,11 +9,12 @@ defmodule Billing.Tasks.Task do
     field :description, :string
     field :employee_id, Ecto.UUID
     field :public_id, Ecto.UUID
+    field :jira_id, :string
 
     timestamps()
   end
 
-  @fields [:public_id, :description, :employee_id, :completed, :complete_price, :assign_price]
+  @fields [:public_id, :description, :employee_id, :completed, :complete_price, :assign_price, :jira_id]
 
   @doc false
   def changeset(task, attrs) do

@@ -77,10 +77,10 @@ defmodule Billing.Kafka.Consumer do
       {:ok, payload} ->
         case payload["event_name"] do
           "task_assigned" ->
-            :ok = SchemaRegistry.load_schema("tasks", "task_assigned") |> SchemaRegistry.validate(payload)
+            :ok = SchemaRegistry.load_schema("tasks", "task_assigned", payload["event_version"]) |> SchemaRegistry.validate(payload)
             AddTask.call(payload["data"])
           "task_completed" ->
-            :ok = SchemaRegistry.load_schema("tasks", "task_completed") |> SchemaRegistry.validate(payload)
+            :ok = SchemaRegistry.load_schema("tasks", "task_completed", payload["event_version"]) |> SchemaRegistry.validate(payload)
             CompleteTask.call(payload["data"])
           event -> Logger.warn("Unknown event: #{event}")
         end

@@ -7,6 +7,7 @@ defmodule TaskTracker.Tasks.Task do
     field :description, :string
     field :employee_id, Ecto.UUID
     field :public_id, Ecto.UUID, autogenerate: true
+    field :jira_id, :string
 
     timestamps()
   end
@@ -14,8 +15,9 @@ defmodule TaskTracker.Tasks.Task do
   @doc false
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:description, :employee_id])
-    |> validate_required([:description, :employee_id])
+    |> cast(attrs, [:jira_id, :description, :employee_id])
+    |> validate_required([:jira_id, :description, :employee_id])
+    |> validate_format(:description, ~r/[^\[\]]/)
   end
 
   def assign_changeset(task, attrs) do

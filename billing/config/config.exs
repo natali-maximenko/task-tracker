@@ -56,14 +56,12 @@ config :billing,
   auth_host: "http://localhost:4000",
   auth_endpoint: "/api/v1/users/log_in"
 
-topics = ["test", "tasks-lifecycle", "tasks-stream"]
 consumer_topics = ["accounts-stream", "tasks-lifecycle"]
 
 config :billing,
   kafka_topics: consumer_topics,
   kafka_group_id: "group_1",
   kafka_brokers: [kafka: 9092]
-
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
