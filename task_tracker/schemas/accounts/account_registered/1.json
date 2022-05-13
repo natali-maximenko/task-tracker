@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+  
+    "title": "Accounts.AccuntRegistered.v1",
+    "description": "json schema for CUD accounts events (version 1)",
+  
+    "definitions": {
+      "event_data": {
+        "type": "object",
+        "properties": {
+          "email": {"type": "string"},  
+          "public_id": {"type": "string"},
+          "role": {"enum": ["employee", "manager", "admin"]},
+          "name": {"type": "string"}
+        },
+        "required": [
+          "public_id",
+          "email",
+          "name",
+          "role"
+        ]
+      }
+    },
+
+    "type": "object",
+    "properties": {
+      "event_id":      { "type": "string" },
+      "event_version": { "enum": [1] },
+      "event_name":    { "enum": ["account_registered"] },
+      "event_time":    { "type": "string" },
+      "producer":      { "type": "string" },
+  
+      "data": { "$ref": "#/definitions/event_data" }
+    },
+    "required": [
+      "event_id",
+      "event_version",
+      "event_name",
+      "event_time",
+      "producer",
+      "data"
+    ]
+  }
+  

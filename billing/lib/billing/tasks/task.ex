@@ -13,7 +13,7 @@ defmodule Billing.Tasks.Task do
     timestamps()
   end
 
-  @fields [:public_id, :description, :employee_id, :completed]
+  @fields [:public_id, :description, :employee_id, :completed, :complete_price, :assign_price]
 
   @doc false
   def changeset(task, attrs) do

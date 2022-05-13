@@ -13,7 +13,7 @@ defmodule Billing.Payments do
   end
 
   def find_employee_bill(employee_id) do
-    Repo.get_by(Bill, employee_id: employee_id)
+    Repo.get_by!(Bill, employee_id: employee_id)
   end
 
   def create_bill({:ok, %User{public_id: id}}) do

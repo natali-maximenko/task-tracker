@@ -8,11 +8,12 @@ defmodule Billing.Commands.AddTask do
   def call(attrs) do
     attrs
     |> Map.merge(%{"assign_price" => generate_assign_price(), "complete_price" => generate_complete_price()})
+    |> IO.inspect()
     |> Tasks.create_task()
     |> assign_payment()
   end
 
-  defp assign_payment(%Task{employee_id: public_id, assign_price: price}) do
+  defp assign_payment({:ok, %Task{employee_id: public_id, assign_price: price}}) do
     Payments.find_employee_bill(public_id)
     |> Payments.change_balance(price)
   end

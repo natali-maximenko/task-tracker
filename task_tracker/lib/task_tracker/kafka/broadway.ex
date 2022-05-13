@@ -3,7 +3,7 @@ defmodule TaskTracker.Kafka.Consumer do
 
   require Logger
   alias Broadway.Message
-  alias TaskTracker.Accounts
+  alias TaskTracker.{Accounts, SchemaRegistry}
 
   def start_link(_opts) do
     topics = Application.get_env(:task_tracker, :kafka_topics)
@@ -49,9 +49,14 @@ defmodule TaskTracker.Kafka.Consumer do
     case Jason.decode(data) do
       {:ok, payload} ->
         IO.inspect(payload)
-        # TODO find or create
-        {:ok, user} = Accounts.create_user(payload["data"])
-        IO.inspect(user)
+        case payload["event_name"] do
+          "account_registered" ->
+            :ok = SchemaRegistry.load_schema("accounts", "account_registered") |> SchemaRegistry.validate(payload)
+            # TODO find or create
+            {:ok, user} = Accounts.create_user(payload["data"])
+            IO.inspect(user)
+          event_name -> Logger.warn("Unknown event: #{event_name}")
+        end
 
       err ->
         Logger.error(

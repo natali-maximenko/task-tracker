@@ -3,6 +3,7 @@ defmodule Billing.Repo.Migrations.CreateTasks do
 
   def change do
     create table(:tasks) do
+      add :public_id, :uuid, null: false
       add :description, :string
       add :employee_id, :uuid
       add :assign_price, :integer

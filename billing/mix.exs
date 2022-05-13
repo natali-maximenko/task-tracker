@@ -38,6 +38,7 @@ defmodule Billing.MixProject do
       {:ecto_sql, "~> 3.6"},
       {:broadway_kafka, "~> 0.3"},
       {:guardian, "~> 2.0"},
+      {:ex_json_schema, "~> 0.9.1"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},

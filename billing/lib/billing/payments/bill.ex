@@ -3,13 +3,13 @@ defmodule Billing.Payments.Bill do
   import Ecto.Changeset
 
   schema "bills" do
-    field :balance, :integer
+    field :balance, :integer, default: 0
     field :employee_id, Ecto.UUID
 
     timestamps()
   end
 
-  @fields [:balance, :description]
+  @fields [:balance, :employee_id]
 
   @doc false
   def changeset(bill, attrs) do

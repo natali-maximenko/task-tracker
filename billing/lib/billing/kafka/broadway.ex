@@ -4,6 +4,7 @@ defmodule Billing.Kafka.Consumer do
 
   alias Broadway.Message
   alias Billing.Commands.{AddTask, AddAccount, CompleteTask}
+  alias Billing.SchemaRegistry
 
   def start_link(_opts) do
     topics = Application.get_env(:billing, :kafka_topics)
@@ -50,8 +51,14 @@ defmodule Billing.Kafka.Consumer do
     case Jason.decode(data) do
       {:ok, payload} ->
         IO.inspect(payload)
-        bill = AddAccount.call(payload["data"])
-        IO.inspect(bill)
+        case payload["event_name"] do
+          "account_registered" ->
+            :ok = SchemaRegistry.load_schema("accouunts", "account_registered") |> SchemaRegistry.validate(payload)
+            bill = AddAccount.call(payload["data"])
+            IO.inspect(bill)
+          event_name -> Logger.warn("Unknown event: #{event_name}")
+        end
+
 
       err ->
         Logger.error(
@@ -68,9 +75,13 @@ defmodule Billing.Kafka.Consumer do
 
     case Jason.decode(data) do
       {:ok, payload} ->
-        case payload["event"] do
-          "task_assigned" -> AddTask.call(payload["data"])
-          "task_completed" -> CompleteTask.call(payload["data"])
+        case payload["event_name"] do
+          "task_assigned" ->
+            :ok = SchemaRegistry.load_schema("tasks", "task_assigned") |> SchemaRegistry.validate(payload)
+            AddTask.call(payload["data"])
+          "task_completed" ->
+            :ok = SchemaRegistry.load_schema("tasks", "task_completed") |> SchemaRegistry.validate(payload)
+            CompleteTask.call(payload["data"])
           event -> Logger.warn("Unknown event: #{event}")
         end
 
