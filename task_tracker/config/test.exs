@@ -23,6 +23,8 @@ config :task_tracker, TaskTrackerWeb.Endpoint,
 # In test we don't send emails.
 config :task_tracker, TaskTracker.Mailer, adapter: Swoosh.Adapters.Test
 
+config :task_tracker, Oban, testing: :inline
+
 # Print only warnings and errors during test
 config :logger, level: :warn
 

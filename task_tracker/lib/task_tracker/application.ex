@@ -17,7 +17,8 @@ defmodule TaskTracker.Application do
       # Start the Endpoint (http/https)
       TaskTrackerWeb.Endpoint,
       # Kafka
-      {TaskTracker.Kafka.Consumer, []}
+      {TaskTracker.Kafka.Consumer, []},
+      {Oban, oban_config()}
       # Start a worker by calling: TaskTracker.Worker.start_link(arg)
       # {TaskTracker.Worker, arg}
     ]
@@ -36,5 +37,9 @@ defmodule TaskTracker.Application do
   def config_change(changed, _new, removed) do
     TaskTrackerWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp oban_config do
+    Application.fetch_env!(:task_tracker, Oban)
   end
 end
