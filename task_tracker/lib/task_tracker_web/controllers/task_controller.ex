@@ -3,8 +3,9 @@ defmodule TaskTrackerWeb.TaskController do
 
   alias TaskTracker.Tasks
   alias TaskTracker.Tasks.Task
-  alias TaskTracker.Kafka.OutboxWorker
+  alias TaskTracker.Kafka.Producer
   alias TaskTracker.Commands.{AddTask, CompleteTask, ShuffleTasks}
+  alias TaskTracker.SchemaRegistry
 
   def index(conn, _params) do
     tasks = Tasks.list_tasks()
@@ -36,11 +37,9 @@ defmodule TaskTrackerWeb.TaskController do
           "data" => data
         }
 
-        # :ok =  SchemaRegistry.load_schema("tasks", "task_assigned", 2) |> SchemaRegistry.validate(event)
-        # Producer.send_message("tasks-lifecycle", event)
-        event
-        |> OutboxWorker.new()
-        |> Oban.insert()
+        # TODO ack
+        :ok =  SchemaRegistry.load_schema("tasks", "task_assigned", 2) |> SchemaRegistry.validate(event)
+        Producer.send_message("tasks-lifecycle", event)
 
         conn
         |> put_flash(:info, "Task created successfully.")
@@ -90,11 +89,8 @@ defmodule TaskTrackerWeb.TaskController do
           "data" => data
         }
 
-        # :ok = SchemaRegistry.load_schema("tasks", "task_completed", 1) |> SchemaRegistry.validate(event)
-        # Producer.send_message("tasks-lifecycle", event)
-        event
-        |> OutboxWorker.new()
-        |> Oban.insert()
+        :ok = SchemaRegistry.load_schema("tasks", "task_completed", 1) |> SchemaRegistry.validate(event)
+        Producer.send_message("tasks-lifecycle", event)
 
         conn
         |> put_flash(:info, "Tasks completed successfully.")

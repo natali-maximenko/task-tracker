@@ -40,7 +40,6 @@ defmodule TaskTracker.MixProject do
       {:ecto_sql, "~> 3.6"},
       {:guardian, "~> 2.0"},
       {:ex_json_schema, "~> 0.9.1"},
-      {:oban, "~> 2.12"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},

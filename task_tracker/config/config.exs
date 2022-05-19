@@ -73,11 +73,6 @@ config :kafka_ex,
   kafka_version: "kayrock",
   sleep_for_reconnect: 5_000
 
-config :task_tracker, Oban,
-  repo: TaskTracker.Repo,
-  plugins: [Oban.Plugins.Pruner],
-  queues: [default: 10, events: 50]
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
