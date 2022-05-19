@@ -17,7 +17,7 @@ defmodule TaskTracker.Application do
       # Start the Endpoint (http/https)
       TaskTrackerWeb.Endpoint,
       # Kafka
-      {TaskTracker.Kafka.Consumer, []}
+      {TaskTracker.Kafka.Consumer, []},
       # Start a worker by calling: TaskTracker.Worker.start_link(arg)
       # {TaskTracker.Worker, arg}
     ]

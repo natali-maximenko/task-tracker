@@ -5,6 +5,7 @@ defmodule TaskTracker.Commands.ShuffleTasks do
   import Ecto.Query, warn: false
   alias TaskTracker.{Auth, Repo, Tasks}
   alias TaskTracker.Kafka.Producer
+  alias TaskTracker.SchemaRegistry
 
   def call(token) do
     task_ids = Tasks.list_opened_tasks()
@@ -25,7 +26,20 @@ defmodule TaskTracker.Commands.ShuffleTasks do
       |> Repo.update_all(set: [employee_id: user_id])
 
       # TODO use batch produce
-      Producer.send_message("tasks-lifecycle", %{event: "task_assigned", data: %{task_id: task_id, employee_id: user_id}})
+      produce(%{task_id: task_id, employee_id: user_id})
     end)
+  end
+
+  @assign_schema SchemaRegistry.load_schema("tasks", "task_assigned")
+  defp produce(data) do
+    event = %{
+      "event_id" => Ecto.UUID.generate,
+      "event_version" => 1,
+      "event_time" => DateTime.now!("Etc/UTC") |> to_string(),
+      "event_name" => "task_assigned",
+      "producer" => "task_tracker",
+      "data" => data}
+    :ok = SchemaRegistry.validate(@assign_schema, event)
+    Producer.send_message("tasks-lifecycle", event)
   end
 end

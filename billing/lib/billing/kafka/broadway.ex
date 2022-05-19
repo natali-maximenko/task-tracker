@@ -3,7 +3,8 @@ defmodule Billing.Kafka.Consumer do
   require Logger
 
   alias Broadway.Message
-  alias Billing.Accounts
+  alias Billing.Commands.{AddTask, AddAccount, CompleteTask}
+  alias Billing.SchemaRegistry
 
   def start_link(_opts) do
     topics = Application.get_env(:billing, :kafka_topics)
@@ -50,8 +51,39 @@ defmodule Billing.Kafka.Consumer do
     case Jason.decode(data) do
       {:ok, payload} ->
         IO.inspect(payload)
-        user = Accounts.find_or_create(payload["data"])
-        IO.inspect(user)
+        case payload["event_name"] do
+          "account_registered" ->
+            :ok = SchemaRegistry.load_schema("accouunts", "account_registered") |> SchemaRegistry.validate(payload)
+            bill = AddAccount.call(payload["data"])
+            IO.inspect(bill)
+          event_name -> Logger.warn("Unknown event: #{event_name}")
+        end
+
+
+      err ->
+        Logger.error(
+          "Unable to decode kafka message, context: #{inspect(context)}, error: #{inspect(err, pretty: true)}, message:\n#{inspect(message, pretty: true)}"
+        )
+    end
+
+    message
+  end
+
+  @impl true
+  def handle_message(_processor, %Message{data: data, metadata: %{topic: "tasks-lifecycle"}} = message, context) do
+    Logger.debug("BROADWAY #{inspect(context, pretty: true)}\n#{inspect(message, pretty: true)}")
+
+    case Jason.decode(data) do
+      {:ok, payload} ->
+        case payload["event_name"] do
+          "task_assigned" ->
+            :ok = SchemaRegistry.load_schema("tasks", "task_assigned", payload["event_version"]) |> SchemaRegistry.validate(payload)
+            AddTask.call(payload["data"])
+          "task_completed" ->
+            :ok = SchemaRegistry.load_schema("tasks", "task_completed", payload["event_version"]) |> SchemaRegistry.validate(payload)
+            CompleteTask.call(payload["data"])
+          event -> Logger.warn("Unknown event: #{event}")
+        end
 
       err ->
         Logger.error(
