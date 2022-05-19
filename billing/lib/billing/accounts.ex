@@ -21,6 +21,10 @@ defmodule Billing.Accounts do
     Repo.all(User)
   end
 
+  def list_employees do
+    Repo.all(from u in User, where: u.role == "employee")
+  end
+
   @doc """
   Gets a single user.
 
@@ -44,9 +48,10 @@ defmodule Billing.Accounts do
       nil ->
         {:ok, user} = create_user(data)
         user
-      user -> user
-    end
 
+      user ->
+        user
+    end
   end
 
   @doc """
