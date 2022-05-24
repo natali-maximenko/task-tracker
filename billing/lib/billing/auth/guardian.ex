@@ -1,6 +1,6 @@
 defmodule Billing.Auth.Guardian do
   use Guardian, otp_app: :billing
-  
+
   alias Billing.Accounts
   alias Billing.Accounts.User
 

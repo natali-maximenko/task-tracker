@@ -16,6 +16,7 @@ defmodule Billing.Application do
       {Phoenix.PubSub, name: Billing.PubSub},
       # Start the Endpoint (http/https)
       BillingWeb.Endpoint,
+      Billing.Scheduler,
       {Billing.Kafka.Consumer, []}
       # Start a worker by calling: Billing.Worker.start_link(arg)
       # {Billing.Worker, arg}

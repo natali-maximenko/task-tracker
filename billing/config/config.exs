@@ -63,6 +63,12 @@ config :billing,
   kafka_group_id: "group_1",
   kafka_brokers: [kafka: 9092]
 
+config :billing, Billing.Scheduler,
+  jobs: [
+    # Every night at 0:30
+    {"30 0 * * *", {Billing.Commands.ClosePaymentPeriod, :call, []}}
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

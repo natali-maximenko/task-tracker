@@ -12,8 +12,10 @@ defmodule Billing.Commands.CompleteTask do
     |> complete_payment()
   end
 
-  defp complete_payment(%Task{employee_id: public_id, complete_price: price}) do
+  defp complete_payment(%Task{employee_id: public_id, complete_price: price, description: desc}) do
     Payments.find_employee_bill(public_id)
     |> Payments.change_balance(price)
+
+    Payments.create_audit_log(%{employee_id: public_id, debit: price, description: desc})
   end
 end

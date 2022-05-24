@@ -14,13 +14,20 @@ defmodule Billing.Tasks.Task do
     timestamps()
   end
 
-  @fields [:public_id, :description, :employee_id, :completed, :complete_price, :assign_price, :jira_id]
+  @fields [
+    :public_id,
+    :description,
+    :employee_id,
+    :completed,
+    :complete_price,
+    :assign_price,
+    :jira_id
+  ]
 
   @doc false
   def changeset(task, attrs) do
     task
     |> cast(attrs, @fields)
-    |> validate_required(@fields)
   end
 
   def assign_changeset(task, attrs) do
