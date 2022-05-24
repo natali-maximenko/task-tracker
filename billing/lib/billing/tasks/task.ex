@@ -28,8 +28,6 @@ defmodule Billing.Tasks.Task do
   def changeset(task, attrs) do
     task
     |> cast(attrs, @fields)
-
-    # |> validate_required(@fields)
   end
 
   def assign_changeset(task, attrs) do

@@ -58,10 +58,7 @@ defmodule Billing.Kafka.Consumer do
 
         case payload["event_name"] do
           "account_registered" ->
-            :ok =
-              SchemaRegistry.load_schema("accouunts", "account_registered")
-              |> SchemaRegistry.validate(payload)
-
+            :ok = SchemaRegistry.load_schema("accouunts", "account_registered") |> SchemaRegistry.validate(payload)
             bill = AddAccount.call(payload["data"])
             IO.inspect(bill)
 
@@ -90,17 +87,11 @@ defmodule Billing.Kafka.Consumer do
       {:ok, payload} ->
         case payload["event_name"] do
           "task_assigned" ->
-            :ok =
-              SchemaRegistry.load_schema("tasks", "task_assigned", payload["event_version"])
-              |> SchemaRegistry.validate(payload)
-
+            :ok = SchemaRegistry.load_schema("tasks", "task_assigned", payload["event_version"]) |> SchemaRegistry.validate(payload)
             AddTask.call(payload["data"])
 
           "task_completed" ->
-            :ok =
-              SchemaRegistry.load_schema("tasks", "task_completed", payload["event_version"])
-              |> SchemaRegistry.validate(payload)
-
+            :ok = SchemaRegistry.load_schema("tasks", "task_completed", payload["event_version"]) |> SchemaRegistry.validate(payload)
             CompleteTask.call(payload["data"])
 
           event ->
